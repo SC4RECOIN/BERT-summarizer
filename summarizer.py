@@ -10,6 +10,7 @@ import gdown
 # must be gdrive sharable link
 MODEL_URL = 'https://drive.google.com/a/boastcapital.com/uc?id=1-IKVCtc4Q-BdZpjXc4s70_fRsWnjtYLr'
 
+
 class AbstractSummarizer(object):
     def __init__(self, model_path='cache/abs_bert_model.pt'):
         if not os.path.exists('cache'):
@@ -25,12 +26,14 @@ class AbstractSummarizer(object):
         if not os.path.exists(cache_dir):
             os.mkdir(cache_dir)
 
-        checkpoint = torch.load(model_path, map_location=lambda storage, loc: storage)
+        checkpoint = torch.load(
+            model_path, map_location=lambda storage, loc: storage)
         device = "cuda" if torch.cuda.is_available() else "cpu"
         self.model = BertSummarizer(checkpoint, device, cache_dir)
         self.model.eval()
 
-        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, cache_dir=cache_dir)
+        tokenizer = BertTokenizer.from_pretrained(
+            'bert-base-uncased', do_lower_case=True, cache_dir=cache_dir)
         self.predictor = build_predictor(tokenizer, self.model)
 
     def get_summary(self, texts):
