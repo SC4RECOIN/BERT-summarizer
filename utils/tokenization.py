@@ -57,6 +57,7 @@ def whitespace_tokenize(text):
 
 class BertTokenizer(object):
     """Runs end-to-end tokenization: punctuation splitting + wordpiece"""
+
     def __init__(self, vocab_file, do_lower_case=True, max_len=None,
                  never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]", "[unused0]", "[unused1]", "[unused2]", "[unused3]", "[unused4]", "[unused5]", "[unused6]")):
 
@@ -80,7 +81,7 @@ class BertTokenizer(object):
         else:
             pretokens = list(enumerate(text.split()))
 
-        for i,token in pretokens:
+        for i, token in pretokens:
             subtokens = self.wordpiece_tokenizer.tokenize(token)
             for sub_token in subtokens:
                 split_tokens.append(sub_token)
@@ -140,6 +141,7 @@ class BertTokenizer(object):
 
 class BasicTokenizer(object):
     """Runs basic tokenization (punctuation splitting, lower casing, etc.)."""
+
     def __init__(self,
                  do_lower_case=True,
                  never_split=("[UNK]", "[SEP]", "[PAD]", "[CLS]", "[MASK]")):
@@ -152,11 +154,12 @@ class BasicTokenizer(object):
         text = self._tokenize_chinese_chars(text)
         orig_tokens = whitespace_tokenize(text)
         split_tokens = []
-        for i,token in enumerate(orig_tokens):
+        for i, token in enumerate(orig_tokens):
             if self.do_lower_case and token not in self.never_split:
                 token = token.lower()
                 token = self._run_strip_accents(token)
-            split_tokens.extend([(i,t) for t in self._run_split_on_punc(token)])
+            split_tokens.extend([(i, t)
+                                 for t in self._run_split_on_punc(token)])
 
         return split_tokens
 

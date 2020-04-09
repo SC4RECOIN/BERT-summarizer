@@ -50,7 +50,6 @@ class Batch(object):
             mask_src = 1 - (src == 0).float()
             mask_tgt = 1 - (tgt == 0).float()
 
-
             clss = torch.tensor(self._pad(pre_clss, -1))
             src_sent_labels = torch.tensor(self._pad(pre_src_sent_labels, 0))
             mask_cls = 1 - (clss == -1).float()
@@ -59,13 +58,11 @@ class Batch(object):
             setattr(self, 'mask_cls', mask_cls.to(device))
             setattr(self, 'src_sent_labels', src_sent_labels.to(device))
 
-
             setattr(self, 'src', src.to(device))
             setattr(self, 'tgt', tgt.to(device))
             setattr(self, 'segs', segs.to(device))
             setattr(self, 'mask_src', mask_src.to(device))
             setattr(self, 'mask_tgt', mask_tgt.to(device))
-
 
             if (is_test):
                 src_str = [x[-2] for x in data]
@@ -80,7 +77,8 @@ class Batch(object):
 def load_text(texts: List[str]):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     max_pos = 512
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+    tokenizer = BertTokenizer.from_pretrained(
+        'bert-base-uncased', do_lower_case=True)
     sep_vid = tokenizer.vocab['[SEP]']
     cls_vid = tokenizer.vocab['[CLS]']
 
@@ -93,7 +91,8 @@ def load_text(texts: List[str]):
         src_subtoken_idxs = tokenizer.convert_tokens_to_ids(src_subtokens)
         src_subtoken_idxs = src_subtoken_idxs[:-1][:max_pos]
         src_subtoken_idxs[-1] = sep_vid
-        _segs = [-1] + [i for i, t in enumerate(src_subtoken_idxs) if t == sep_vid]
+        _segs = [-1] + \
+            [i for i, t in enumerate(src_subtoken_idxs) if t == sep_vid]
         segs = [_segs[i] - _segs[i - 1] for i in range(1, len(_segs))]
         segments_ids = []
         segs = segs[:max_pos]
@@ -105,7 +104,8 @@ def load_text(texts: List[str]):
 
         src = torch.tensor(src_subtoken_idxs)[None, :].to(device)
         mask_src = (1 - (src == 0).float()).to(device)
-        cls_ids = [[i for i, t in enumerate(src_subtoken_idxs) if t == cls_vid]]
+        cls_ids = [[i for i, t in enumerate(
+            src_subtoken_idxs) if t == cls_vid]]
         clss = torch.tensor(cls_ids).to(device)
         mask_cls = 1 - (clss == -1).float()
         clss[clss == -1] = 0
@@ -116,15 +116,16 @@ def load_text(texts: List[str]):
         src, mask_src, segments_ids, clss, mask_cls = _process_src(x)
         segs = torch.tensor(segments_ids)[None, :].to(device)
         batch = Batch()
-        batch.src  = src
-        batch.tgt  = None
-        batch.mask_src  = mask_src
-        batch.mask_tgt  = None
-        batch.segs  = segs
-        batch.src_str  =  [[sent.replace('[SEP]','').strip() for sent in x.split('[CLS]')]]
-        batch.tgt_str  = ['']
-        batch.clss  = clss
-        batch.mask_cls  = mask_cls
+        batch.src = src
+        batch.tgt = None
+        batch.mask_src = mask_src
+        batch.mask_tgt = None
+        batch.segs = segs
+        batch.src_str = [[sent.replace('[SEP]', '').strip()
+                          for sent in x.split('[CLS]')]]
+        batch.tgt_str = ['']
+        batch.clss = clss
+        batch.mask_cls = mask_cls
 
-        batch.batch_size=1
+        batch.batch_size = 1
         yield batch

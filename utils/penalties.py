@@ -6,6 +6,7 @@ class PenaltyBuilder(object):
     """
     Returns the Length and Coverage Penalty function for Beam Search.
     """
+
     def __init__(self,  length_pen):
         self.length_pen = length_pen
 
@@ -20,6 +21,7 @@ class PenaltyBuilder(object):
     """
     Below are all the different penalty terms implemented so far
     """
+
     def length_wu(self, beam, logprobs, alpha=0.):
         """
         NMT length re-ranking score from

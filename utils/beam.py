@@ -7,6 +7,7 @@ class Beam(object):
     Class for managing the internals of the beam search process.
     Takes care of beams, back pointers, and scores.
     """
+
     def __init__(self, size, pad, bos, eos,
                  n_best=1, cuda=False,
                  global_scorer=None,
